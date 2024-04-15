@@ -31,3 +31,15 @@ body {
     text-wrap: balance;
   }
 }
+
+
+.square {
+  width: 120px; /* Adjusted width */
+  height: 120px;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.x-tile{
+  color: #F433FF;
+}

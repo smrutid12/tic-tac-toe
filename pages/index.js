@@ -43,20 +43,20 @@ export default function Home() {
       const [a, b, c] = winnerInfo.line;
       const squareSize = Math.min(width, height) / 3; // Size of each square
       const margin = squareSize / 6; // Margin to adjust the line position
-    
+
       // Calculate the center coordinates of each square
       const x1 = (a % 3) * squareSize + squareSize / 2;
       const y1 = Math.floor(a / 3) * squareSize + squareSize / 2;
       const x2 = (c % 3) * squareSize + squareSize / 2;
       const y2 = Math.floor(c / 3) * squareSize + squareSize / 2;
-    
+
       // Adjust the line endpoints to be slightly diagonally up
       const deltaX = x2 - x1;
       const deltaY = y2 - y1;
       const length = Math.sqrt(deltaX ** 2 + deltaY ** 2);
       const unitX = deltaX / length;
       const unitY = deltaY / length;
-    
+
       setWinningLine({
         x1: x1 + margin * unitX,
         y1: y1 + margin * unitY,
@@ -91,20 +91,19 @@ export default function Home() {
   const isWinner = winner ? winner : boardIsFull ? 'Draw match' : 'Play to find out!'; // Determine if there's a winner or a draw match
   const status = xIsNext && winner === null ? XTile : winner !== null ? `Finished` : OTile;
   const gridSize = 3; // Assuming a 3x3 grid
-  const squareSize = Math.min(width, height) / gridSize; 
-  console.log(squareSize,'uuuuuuuuuuuuuu')
+  const squareSize = Math.min(width, height) / gridSize;
 
   return (
-    <main className={`container mx-auto flex min-h-screen flex-col items-center justify-between p-24 ${inter.className}`}>
-      <div className="top-10 fixed left-10 x-tile text-4xl">tic-tac-toe</div>
-      <div className="top-10 fixed right-10"><button className="text-2xl" onClick={() => { setBoard(Array(9).fill(null)); setWinningLine(null); setXIsNext(true) }}>Restart</button></div>
+    <main className={`container mx-auto flex flex-col items-center justify-center min-h-screen p-24 ${inter.className}`}>
+      <div className="top-10 fixed left-20 x-tile text-4xl">tic-tac-toe</div>
+      <div className="top-10 fixed right-20"><button className={`text-2xl ${winner !== null? 'shadow-2xl shadow-white':''}`} onClick={() => { setBoard(Array(9).fill(null)); setWinningLine(null); setXIsNext(true) }}>Restart</button></div>
       {winner && <Confetti width={width - 20} height={height} />}
-      {winningLine && (
-          <svg
+      {/* {winningLine && (
+        <svg
           className="absolute z-20"
           width={squareSize * gridSize} // Width of the grid
           height={squareSize * gridSize} // Height of the grid
-          viewBox={`-100 100 ${squareSize * gridSize} ${squareSize * gridSize}`} // ViewBox matching grid dimensions
+          viewBox={`-   100 ${squareSize * gridSize} ${squareSize * gridSize}`} // ViewBox matching grid dimensions
           xmlns="http://www.w3.org/2000/svg"
         >
           <line
@@ -117,7 +116,7 @@ export default function Home() {
             className="winning-line"
           />
         </svg>
-      )}
+      )} */}
       <div className="items-center justify-center font-mono text-3xl flex-column">
         <div className="flex items-center justify-center mt-4 mb-2"><p>Next Player:</p><code className="x-tile">{status}</code></div>
         <div className="border-4 border-black grid grid-cols-3 dark:border-4 dark:border-white">
@@ -128,7 +127,7 @@ export default function Home() {
           ))}
         </div>
       </div>
-      <div className="flex items-center justify-center text-3xl"><p>Winner :</p><code className="x-tile ms-2">{isWinner === 'X' ? XTile : isWinner === 'O' ? OTile : isWinner}</code>
+      <div className="flex items-center justify-center text-3xl mt-3"><p>Winner :</p><code className="x-tile ms-2">{isWinner === 'X' ? XTile : isWinner === 'O' ? OTile : isWinner}</code>
       </div>
     </main>
   );

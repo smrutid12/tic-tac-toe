@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import Confetti from 'react-confetti';
 import { Inter, Tulpen_One } from "next/font/google";
 import { useWindowSize } from "react-use";
@@ -6,7 +6,32 @@ import { useWindowSize } from "react-use";
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
-  const { width, height } = useWindowSize();
+
+  const divRef = useRef(null);
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+  const height = dimensions.height;
+  const width = dimensions.width;
+
+  useEffect(() => {
+    const updateDimensions = () => {
+      if (divRef.current) {
+        setDimensions({
+          width: divRef.current.offsetWidth,
+          height: divRef.current.offsetHeight,
+        });
+      }
+    };
+
+    updateDimensions();
+
+    window.addEventListener('resize', updateDimensions);
+    return () => window.removeEventListener('resize', updateDimensions);
+  }, []);
+
+
+
+
+
   const XTile = (
     <svg width="50px" height="50px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#F433FF">
       <line x1="5" y1="5" x2="19" y2="19" strokeWidth="2.4" strokeLinecap="round" />
@@ -41,8 +66,7 @@ export default function Home() {
     const winnerInfo = calculateWinner(newBoard);
     if (winnerInfo) {
       const [a, b, c] = winnerInfo.line;
-      const squareSize = Math.min(width, height) / 3; // Size of each square
-      const margin = squareSize / 6; // Margin to adjust the line position
+      const squareSize = Math.min(width, height) / 3;
 
       // Calculate the center coordinates of each square
       const x1 = (a % 3) * squareSize + squareSize / 2;
@@ -57,11 +81,12 @@ export default function Home() {
       const unitX = deltaX / length;
       const unitY = deltaY / length;
 
+
       setWinningLine({
-        x1: x1 + margin * unitX,
-        y1: y1 + margin * unitY,
-        x2: x2 - margin * unitX,
-        y2: y2 - margin * unitY,
+        x1: x1,
+        y1: y1 - 29,
+        x2: x2,
+        y2: y2 - 29,
       });
     }
   }
@@ -92,18 +117,20 @@ export default function Home() {
   const status = xIsNext && winner === null ? XTile : winner !== null ? `Finished` : OTile;
   const gridSize = 3; // Assuming a 3x3 grid
   const squareSize = Math.min(width, height) / gridSize;
+  const { height: h, width: w } = useWindowSize();
+
 
   return (
     <main className={`container mx-auto flex flex-col items-center justify-center min-h-screen p-24 ${inter.className}`}>
       <div className="top-10 fixed left-20 x-tile text-4xl">tic-tac-toe</div>
-      <div className="top-10 fixed right-20"><button className={`text-2xl ${winner !== null? 'shadow-2xl shadow-white':''}`} onClick={() => { setBoard(Array(9).fill(null)); setWinningLine(null); setXIsNext(true) }}>Restart</button></div>
-      {winner && <Confetti width={width - 20} height={height} />}
-      {/* {winningLine && (
+      <div className="top-10 fixed right-20"><button className={`text-2xl ${winner !== null ? 'shadow-2xl shadow-white' : ''}`} onClick={() => { setBoard(Array(9).fill(null)); setWinningLine(null); setXIsNext(true) }}>Restart</button></div>
+      {winner && <Confetti width={w - 25} height={h * .95} />}
+      {winningLine && (
         <svg
-          className="absolute z-20"
+          className="fixed z-20"
           width={squareSize * gridSize} // Width of the grid
           height={squareSize * gridSize} // Height of the grid
-          viewBox={`-   100 ${squareSize * gridSize} ${squareSize * gridSize}`} // ViewBox matching grid dimensions
+          viewBox={`0 0 ${squareSize * gridSize} ${squareSize * gridSize}`} // ViewBox matching grid dimensions
           xmlns="http://www.w3.org/2000/svg"
         >
           <line
@@ -111,14 +138,14 @@ export default function Home() {
             y1={winningLine.y1}
             x2={winningLine.x2}
             y2={winningLine.y2}
-            strokeWidth="4"
+            style={{ marginLeft: '10px' }}
+            strokeWidth="8"
             stroke="#F433FF"
             className="winning-line"
           />
         </svg>
-      )} */}
-      <div className="items-center justify-center font-mono text-3xl flex-column">
-        <div className="flex items-center justify-center mt-4 mb-2"><p>Next Player:</p><code className="x-tile">{status}</code></div>
+      )}
+      <div ref={divRef} className="items-center justify-center font-mono text-3xl flex-column">
         <div className="border-4 border-black grid grid-cols-3 dark:border-4 dark:border-white">
           {board.map((value, index) => (
             <div className="square flex items-center justify-center border-4 border-black dark:border-4 dark:border-white" key={index} onClick={() => { handleBoardStatus(index) }}>
